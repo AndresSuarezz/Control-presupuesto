@@ -1,14 +1,33 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CerrarBtn from "../img/cerrar.svg";
 import Mensaje from "./Mensaje";
 
-const Modal = ({ setModal, animarModal, setAnimarModal, guardarGasto }) => {
+const Modal = ({
+  setModal,
+  animarModal,
+  setAnimarModal,
+  guardarGasto,
+  gastoEditar,
+}) => {
   const [nombreGasto, setNombreGasto] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [fecha, setFecha] = useState("")
+  const [id, setId] = useState("");
 
   const [mensaje, setMensaje] = useState("");
+
+  useEffect(() => {
+    if (Object.keys(gastoEditar).length > 0) {
+      setNombreGasto(gastoEditar.nombreGasto);
+      setCantidad(gastoEditar.cantidad);
+      setCategoria(gastoEditar.categoria);
+      setMensaje(gastoEditar.mensaje);
+      setId(gastoEditar.id)
+      setFecha(gastoEditar.fecha)
+    }
+  }, []);
 
   const ocultarModal = () => {
     setAnimarModal(false);
@@ -29,7 +48,7 @@ const Modal = ({ setModal, animarModal, setAnimarModal, guardarGasto }) => {
       }, 2000);
       return;
     }
-    guardarGasto({nombreGasto, cantidad, categoria})
+    guardarGasto({ nombreGasto, cantidad, categoria, id, fecha });
   };
 
   return (
@@ -42,7 +61,9 @@ const Modal = ({ setModal, animarModal, setAnimarModal, guardarGasto }) => {
         onSubmit={handleSubmit}
         className={`formulario ${animarModal ? "animar" : "cerrar"}`}
       >
-        <legend>Nuevo Gasto</legend>
+        <legend>
+          {gastoEditar.nombreGasto ? "Editar Gasto" : "Nuevo Gasto"}
+        </legend>
         {mensaje && <Mensaje tipo="error">{mensaje}</Mensaje>}
 
         {/* NombreGasto */}
@@ -87,7 +108,10 @@ const Modal = ({ setModal, animarModal, setAnimarModal, guardarGasto }) => {
           </select>
         </div>
         {/* Boton */}
-        <input type="submit" value={"Añadir Gasto"} />
+        <input
+          type="submit"
+          value={gastoEditar.nombreGasto ? "Guardar cambios" : "Añadir Gasto"}
+        />
       </form>
     </div>
   );
